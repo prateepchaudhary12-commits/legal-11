@@ -1,0 +1,6 @@
+{
+  "name": "Legal Berries - Premium Legal Drafts & Court Masterclasses",
+  "description": "Master legal drafting and court advocacy with Legal Berries. Complete vault of legal drafts, 7-day family court masterclass, and contract drafting programs with instant WhatsApp cohort access.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

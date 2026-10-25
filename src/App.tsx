@@ -104,17 +104,22 @@ export default function App() {
     }
   });
 
-  // Load server-side courses if available
+  // Load server-side courses if available (gracefully fallback on static hosts like GitHub Pages)
   useEffect(() => {
     fetch('/api/courses')
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) return null;
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) return null;
+        return res.json();
+      })
       .then((data) => {
         if (data && data.hasServerOverrides && Array.isArray(data.courses) && data.courses.length > 0) {
           setCourses(data.courses);
         }
       })
       .catch(() => {
-        // use local defaults
+        // gracefully fall back to local defaults
       });
   }, []);
 

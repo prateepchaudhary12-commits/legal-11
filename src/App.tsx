@@ -37,8 +37,8 @@ export default function App() {
     return [
       {
         id: 'ENR-DEMO-01',
-        fullName: 'Adv. Radhika Dhangar',
-        email: 'radhika.dhangar@delhibar.in',
+        fullName: 'Adv. Rajesh Kumar',
+        email: 'rajesh.kumar@delhibar.in',
         mobile: '9827011223',
         courseId: 'family-court-7-days',
         courseTitle: '7 Days Family Court: Cases & Drafts Masterclass',
@@ -51,8 +51,8 @@ export default function App() {
       },
       {
         id: 'ENR-DEMO-02',
-        fullName: 'Adv. Abhishek Chaudhary',
-        email: 'abhishek.c@delhibar.org',
+        fullName: 'Adv. Arnish Singh',
+        email: 'arnish.s@delhibar.org',
         mobile: '9811443322',
         courseId: 'all-legal-drafts-vault',
         courseTitle: 'All Legal Drafts: Every Type Master Vault',
@@ -347,7 +347,7 @@ export default function App() {
           selectedCourseId={selectedCurriculumId}
         />
 
-        {/* Verified Reviews Section (Adv. Radhika Dhangar, Adv. Abhishek Chaudhary, Manoj, Satyam) */}
+        {/* Verified Reviews Section (Adv. Rajesh Kumar, Adv. Arnish Singh, Manoj, Satyam) */}
         <Testimonials />
 
         {/* Contact Section (Instagram legalberries.official & Email legalberries.official@gmail.com) */}

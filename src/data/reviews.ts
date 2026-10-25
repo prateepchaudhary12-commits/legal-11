@@ -2,11 +2,11 @@ import { Review } from '../types';
 
 export const REVIEWS: Review[] = [
   {
-    id: 'rev-radhika',
-    name: 'Adv. Radhika Dhangar',
+    id: 'rev-rajesh',
+    name: 'Adv. Rajesh Kumar',
     designation: 'Advocate, Delhi High Court & District Courts',
     chamberOrCourt: 'Delhi High Court & District Courts',
-    avatarText: 'RD',
+    avatarText: 'RK',
     rating: 5,
     courseTaken: '7 Days Family Court Masterclass & Drafts Vault',
     highlightMetric: 'Zero Registry Objections on 14 Petitions',
@@ -14,11 +14,11 @@ export const REVIEWS: Review[] = [
       'The 7 Days Family Court drafting module completely altered my courtroom confidence. Within 2 weeks of practicing the maintenance and custody templates, my petitions were cleared on the first pass without a single registry objection across Delhi High Court and Saket/Tis Hazari District Courts. The asset disclosure affidavit framework alone is worth ten times the price.'
   },
   {
-    id: 'rev-abhishek',
-    name: 'Adv. Abhishek Chaudhary',
+    id: 'rev-arnish',
+    name: 'Adv. Arnish Singh',
     designation: 'Civil & Commercial Litigation Counsel',
     chamberOrCourt: 'Delhi High Court & Tis Hazari Courts',
-    avatarText: 'AC',
+    avatarText: 'AS',
     rating: 5,
     courseTaken: 'All Legal Drafts: Every Type Master Vault',
     highlightMetric: 'Saved 200+ Hours in Trial Chambers',
@@ -41,7 +41,7 @@ export const REVIEWS: Review[] = [
     id: 'rev-satyam',
     name: 'Satyam Sharma',
     designation: 'Final Year Law Student & Chamber Intern',
-    chamberOrCourt: 'Campus Law Centre / Chamber of Standing Counsel',
+    chamberOrCourt: 'Chamber of Standing Counsel',
     avatarText: 'SS',
     rating: 5,
     courseTaken: 'All Legal Drafts Vault + Family Law Cohort',

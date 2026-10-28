@@ -36,6 +36,7 @@ app.use((req, res, next) => {
   const allowedOrigins = [
     'https://legalberries.in',
     'https://www.legalberries.in',
+    'https://legalberries-drafts.ai.studio',
     'http://localhost:3000',
     'http://localhost:5173'
   ];

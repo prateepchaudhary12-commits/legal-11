@@ -922,15 +922,15 @@ export const DeveloperCourseModal: React.FC<DeveloperCourseModalProps> = ({
                             </button>
                           </div>
                         </td>
-                        <td className="py-2.5 px-3 truncate max-w-[240px]">
-                          ais-pre-wemhqdarkm3vb6ualdgddz-764231354837.asia-northeast1.run.app
+                        <td className="py-2.5 px-3 truncate max-w-[240px] text-white font-bold">
+                          legalberries-drafts.ai.studio
                         </td>
                         <td className="py-2.5 px-3 text-right">
                           <button
                             type="button"
                             onClick={() =>
                               handleCopyText(
-                                'ais-pre-wemhqdarkm3vb6ualdgddz-764231354837.asia-northeast1.run.app',
+                                'legalberries-drafts.ai.studio',
                                 'cname'
                               )
                             }
@@ -1005,7 +1005,7 @@ export const DeveloperCourseModal: React.FC<DeveloperCourseModalProps> = ({
                     <div className="mt-1.5 ml-4 p-2.5 bg-[#100B1E] rounded-lg border border-[#2A1F45] text-[11px] font-mono space-y-1">
                       <div><span className="text-[#8E83A6]">Type:</span> <span className="text-[#FA527B] font-bold">CNAME</span></div>
                       <div><span className="text-[#8E83A6]">Name:</span> <span className="text-[#E5C067] font-bold">www</span></div>
-                      <div><span className="text-[#8E83A6]">Value:</span> <span className="text-white break-all">ais-pre-wemhqdarkm3vb6ualdgddz-764231354837.asia-northeast1.run.app</span></div>
+                      <div><span className="text-[#8E83A6]">Value:</span> <span className="text-white font-bold break-all">legalberries-drafts.ai.studio</span></div>
                       <div><span className="text-[#8E83A6]">TTL:</span> <span className="text-[#9E93B5]">1/2 Hour (or 1 Hour)</span></div>
                     </div>
                   </li>

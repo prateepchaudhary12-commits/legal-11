@@ -15,9 +15,9 @@ export const DraftPreviewModal: React.FC<DraftPreviewModalProps> = ({
   onClose,
   onEnrollClick
 }) => {
-  if (!isOpen || !course) return null;
-
   const [copied, setCopied] = useState(false);
+
+  if (!isOpen || !course) return null;
 
   const handleCopySnippet = () => {
     navigator.clipboard.writeText(course.sampleDraftSnippet);

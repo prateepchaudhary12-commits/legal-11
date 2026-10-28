@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, Code2, Globe, Lock } from 'lucide-react';
+import { ShieldCheck, Code2, Globe, Lock, Radio } from 'lucide-react';
 
 interface NavbarProps {
   onOpenDeveloperModal: () => void;
@@ -8,7 +8,12 @@ interface NavbarProps {
   customDomain?: string;
   isAdminAuthorized?: boolean;
   onAdminLogout?: () => void;
+  onOpenLiveHub?: () => void;
+  onlineCount?: number;
+  isConnected?: boolean;
+  latencyMs?: number | null;
 }
+
 
 export const Navbar: React.FC<NavbarProps> = ({
   onOpenDeveloperModal,
@@ -16,7 +21,11 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenEnrollDefault,
   customDomain = 'legalberries.in',
   isAdminAuthorized = false,
-  onAdminLogout
+  onAdminLogout,
+  onOpenLiveHub,
+  onlineCount = 1,
+  isConnected = false,
+  latencyMs = null
 }) => {
   return (
     <header className="sticky top-0 z-40 bg-[#140F24]/90 backdrop-blur-md border-b border-[#2E234B]">
@@ -76,7 +85,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center gap-2.5 shrink-0">
           {/* Admin badge - only visible when environment admin authorization is active */}
           {isAdminAuthorized && (
-            <div className="flex items-center gap-1.5 bg-[#E5C067]/10 border border-[#E5C067]/30 rounded-xl px-2.5 py-1">
+            <div className="flex items-center gap-2 bg-[#E5C067]/10 border border-[#E5C067]/30 rounded-xl px-2.5 py-1">
               <button
                 onClick={onOpenDeveloperModal}
                 title="Environment Admin Suite Active"
@@ -85,6 +94,32 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <ShieldCheck className="w-3.5 h-3.5 text-[#E5C067]" />
                 <span className="hidden sm:inline">Admin Mode</span>
               </button>
+
+              {/* Developer WebSocket Live Link - only visible to admin */}
+              {onOpenLiveHub && (
+                <button
+                  onClick={onOpenLiveHub}
+                  className="hidden md:flex items-center gap-1.5 pl-2 border-l border-[#E5C067]/30 text-[11px] text-[#C5BAD9] hover:text-white transition-colors cursor-pointer"
+                  title="Developer WebSocket Engine Monitor"
+                >
+                  <span className="relative flex h-2 w-2">
+                    <span
+                      className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                        isConnected ? 'bg-emerald-400' : 'bg-amber-400'
+                      }`}
+                    />
+                    <span
+                      className={`relative inline-flex rounded-full h-2 w-2 ${
+                        isConnected ? 'bg-emerald-500' : 'bg-amber-500'
+                      }`}
+                    />
+                  </span>
+                  <span className="font-mono text-[10px] text-emerald-400">
+                    {isConnected ? (latencyMs !== null ? `WS ${latencyMs}ms` : 'WS Live') : 'WS Connecting'}
+                  </span>
+                </button>
+              )}
+
               {onAdminLogout && (
                 <button
                   onClick={onAdminLogout}
@@ -100,7 +135,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Primary Action Button */}
           <button
             onClick={onOpenEnrollDefault}
-            className="py-2.5 px-5 text-xs sm:text-sm font-semibold text-white bg-gradient-to-r from-[#FA527B] to-[#E13D66] rounded-xl hover:opacity-95 transition-opacity whitespace-nowrap shrink-0 shadow-md shadow-[#FA527B]/20 cursor-pointer"
+            className="py-2.5 px-4 sm:px-5 text-xs sm:text-sm font-semibold text-white bg-gradient-to-r from-[#FA527B] to-[#E13D66] rounded-xl hover:opacity-95 transition-opacity whitespace-nowrap shrink-0 shadow-md shadow-[#FA527B]/20 cursor-pointer"
           >
             Enroll in Masterclass
           </button>

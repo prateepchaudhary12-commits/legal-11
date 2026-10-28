@@ -157,12 +157,12 @@ interface MyDocsModalProps {
 }
 
 export const MyDocsModal: React.FC<MyDocsModalProps> = ({ isOpen, onClose, onEnrollPrompt }) => {
-  if (!isOpen) return null;
-
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [viewingSnippetDoc, setViewingSnippetDoc] = useState<LegalDocItem | null>(null);
+
+  if (!isOpen) return null;
 
   const categories = ['All', 'Civil', 'Criminal', 'Family', 'Corporate', 'Writs', 'Deeds'];
 

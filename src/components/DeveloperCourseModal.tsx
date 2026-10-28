@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   X,
   Code2,
@@ -20,9 +20,17 @@ import {
   Lock,
   Key,
   LogOut,
-  AlertTriangle
+  AlertTriangle,
+  Radio,
+  Activity,
+  Wifi,
+  WifiOff,
+  Zap,
+  RefreshCw,
+  Send,
+  Terminal
 } from 'lucide-react';
-import { Course, StudentEnrollment } from '../types';
+import { Course, StudentEnrollment, LiveChatMessage, LiveEnrollmentEvent, WebSocketStatus } from '../types';
 import { INITIAL_COURSES } from '../data/courses';
 
 interface DeveloperCourseModalProps {
@@ -33,10 +41,17 @@ interface DeveloperCourseModalProps {
   enrollments: StudentEnrollment[];
   customDomain?: string;
   onUpdateCustomDomain?: (domain: string) => void;
-  initialTab?: 'edit' | 'add' | 'enrollments' | 'domain';
+  initialTab?: 'edit' | 'add' | 'enrollments' | 'domain' | 'websocket';
   isAdminAuthenticated: boolean;
   onAdminLogin: (key: string) => Promise<boolean>;
   onAdminLogout: () => void;
+  wsStatus?: WebSocketStatus;
+  wsClientId?: string;
+  wsDiscussions?: LiveChatMessage[];
+  liveEnrollments?: LiveEnrollmentEvent[];
+  onWsSendMessage?: (text: string, senderName?: string, senderRole?: any, courseTitle?: string) => void;
+  onWsSendPing?: () => void;
+  onWsReconnect?: () => void;
 }
 
 export const DeveloperCourseModal: React.FC<DeveloperCourseModalProps> = ({
@@ -50,15 +65,28 @@ export const DeveloperCourseModal: React.FC<DeveloperCourseModalProps> = ({
   initialTab = 'domain',
   isAdminAuthenticated,
   onAdminLogin,
-  onAdminLogout
+  onAdminLogout,
+  wsStatus,
+  wsClientId,
+  wsDiscussions = [],
+  liveEnrollments = [],
+  onWsSendMessage,
+  onWsSendPing,
+  onWsReconnect
 }) => {
-  if (!isOpen) return null;
-
-  const [activeTab, setActiveTab] = useState<'edit' | 'add' | 'enrollments' | 'domain'>(initialTab);
+  const [activeTab, setActiveTab] = useState<'edit' | 'add' | 'enrollments' | 'domain' | 'websocket'>(initialTab);
   const [selectedCourseId, setSelectedCourseId] = useState<string>(courses[0]?.id || '');
   const [saveSuccessMsg, setSaveSuccessMsg] = useState('');
   const [domainInput, setDomainInput] = useState(customDomain);
   const [copiedRecord, setCopiedRecord] = useState<string | null>(null);
+
+  // Sync tab if initialTab changes
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab, isOpen]);
+
 
   // Authentication gate state
   const [passkeyInput, setPasskeyInput] = useState('');
@@ -274,6 +302,8 @@ export const DeveloperCourseModal: React.FC<DeveloperCourseModalProps> = ({
     downloadAnchor.remove();
   };
 
+  if (!isOpen) return null;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
       <div className="relative w-full max-w-3xl bg-[#1A1333] border border-[#3E2F63] rounded-2xl shadow-2xl overflow-hidden my-8">
@@ -421,7 +451,7 @@ export const DeveloperCourseModal: React.FC<DeveloperCourseModalProps> = ({
 
           <button
             onClick={() => setActiveTab('domain')}
-            className={`py-3 px-4 text-xs font-semibold flex items-center gap-2 border-b-2 transition-colors ${
+            className={`py-3 px-4 text-xs font-semibold flex items-center gap-2 border-b-2 transition-colors cursor-pointer ${
               activeTab === 'domain'
                 ? 'border-[#00BAF2] text-[#00BAF2]'
                 : 'border-transparent text-[#9E93B5] hover:text-[#F7F2EA]'
@@ -429,6 +459,21 @@ export const DeveloperCourseModal: React.FC<DeveloperCourseModalProps> = ({
           >
             <Globe className="w-3.5 h-3.5" />
             <span>Custom Domain & DNS</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('websocket')}
+            className={`py-3 px-4 text-xs font-semibold flex items-center gap-2 border-b-2 transition-colors cursor-pointer ${
+              activeTab === 'websocket'
+                ? 'border-[#FA527B] text-[#FA527B]'
+                : 'border-transparent text-[#9E93B5] hover:text-[#F7F2EA]'
+            }`}
+          >
+            <Radio className="w-3.5 h-3.5 text-[#FA527B]" />
+            <span>Live WS Engine (Developer Only)</span>
+            {wsStatus?.connected && (
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            )}
           </button>
         </div>
 
@@ -979,6 +1024,192 @@ export const DeveloperCourseModal: React.FC<DeveloperCourseModalProps> = ({
                 <div className="pt-2 border-t border-[#231A3D] flex flex-wrap items-center justify-between gap-2 text-[11px] text-[#A69ABF]">
                   <span>✨ SSL certificates are auto-provisioned upon CNAME propagation.</span>
                   <span>Typical propagation: 15–30 mins</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 5: DEVELOPER WEBSOCKET TERMINAL */}
+          {activeTab === 'websocket' && (
+            <div className="space-y-5 text-xs">
+              {/* Security Banner */}
+              <div className="p-4 bg-gradient-to-r from-[#1E1435] to-[#120D22] border border-[#FA527B]/40 rounded-2xl shadow-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-[#FA527B]/20 border border-[#FA527B]/40 flex items-center justify-center text-[#FA527B]">
+                      <Radio className="w-4 h-4 animate-pulse" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-sm text-[#F7F2EA] flex items-center gap-2">
+                        <span>Developer WebSocket Terminal</span>
+                        <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-rose-500/20 text-[#FA527B] border border-[#FA527B]/30">
+                          Admin Only
+                        </span>
+                      </h4>
+                      <p className="text-[11px] text-[#9E93B5]">
+                        Strictly restricted to developer environment. Regular students and visitors cannot establish WebSocket connections.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {onWsSendPing && (
+                      <button
+                        onClick={onWsSendPing}
+                        className="px-3 py-1.5 rounded-xl bg-[#251A44] hover:bg-[#342456] text-[#E5C067] hover:text-white border border-[#E5C067]/30 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                        title="Ping WebSocket server"
+                      >
+                        <Zap className="w-3.5 h-3.5" />
+                        <span>Ping (Test Latency)</span>
+                      </button>
+                    )}
+                    {onWsReconnect && (
+                      <button
+                        onClick={onWsReconnect}
+                        className="px-3 py-1.5 rounded-xl bg-[#251A44] hover:bg-[#342456] text-[#C5BAD9] hover:text-white border border-[#2E234B] text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                        title="Reconnect WebSocket"
+                      >
+                        <RefreshCw className="w-3.5 h-3.5" />
+                        <span>Reconnect</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Real-time Status Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="p-3.5 bg-[#17112C] border border-[#2E234B] rounded-xl">
+                  <span className="text-[10px] text-[#8E83A6] block uppercase tracking-wider mb-1">
+                    Socket State
+                  </span>
+                  <div className="flex items-center gap-2 font-bold">
+                    {wsStatus?.connected ? (
+                      <>
+                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
+                        <span className="text-emerald-400">OPEN / CONNECTED</span>
+                      </>
+                    ) : wsStatus?.connecting ? (
+                      <>
+                        <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-spin" />
+                        <span className="text-amber-400">CONNECTING...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="w-2.5 h-2.5 rounded-full bg-rose-500" />
+                        <span className="text-rose-400">DISCONNECTED</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                <div className="p-3.5 bg-[#17112C] border border-[#2E234B] rounded-xl">
+                  <span className="text-[10px] text-[#8E83A6] block uppercase tracking-wider mb-1">
+                    Latency
+                  </span>
+                  <span className="font-mono text-base font-bold text-emerald-400">
+                    {wsStatus?.latencyMs !== null && wsStatus?.latencyMs !== undefined
+                      ? `${wsStatus.latencyMs} ms`
+                      : 'Measuring...'}
+                  </span>
+                </div>
+
+                <div className="p-3.5 bg-[#17112C] border border-[#2E234B] rounded-xl">
+                  <span className="text-[10px] text-[#8E83A6] block uppercase tracking-wider mb-1">
+                    Developer Socket ID
+                  </span>
+                  <span className="font-mono text-xs text-[#E5C067] truncate block" title={wsClientId}>
+                    {wsClientId || 'pending auth'}
+                  </span>
+                </div>
+
+                <div className="p-3.5 bg-[#17112C] border border-[#2E234B] rounded-xl">
+                  <span className="text-[10px] text-[#8E83A6] block uppercase tracking-wider mb-1">
+                    Endpoint
+                  </span>
+                  <span className="font-mono text-xs text-white truncate block">
+                    Port 3000 /ws
+                  </span>
+                </div>
+              </div>
+
+              {/* Developer Live Telemetry & Feed */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {/* Live Real-Time Enrollments Received over Socket */}
+                <div className="p-4 bg-[#140F24] border border-[#2E234B] rounded-2xl flex flex-col h-[280px]">
+                  <div className="flex items-center justify-between pb-2 mb-3 border-b border-[#2E234B]">
+                    <div className="flex items-center gap-2">
+                      <Users className="w-4 h-4 text-emerald-400" />
+                      <h5 className="font-bold text-xs text-white">Live Batch Telemetry Feed</h5>
+                    </div>
+                    <span className="text-[10px] font-mono text-[#8E83A6]">
+                      {liveEnrollments.length} events
+                    </span>
+                  </div>
+
+                  <div className="flex-1 overflow-y-auto space-y-2 pr-1">
+                    {liveEnrollments.length === 0 ? (
+                      <div className="h-full flex items-center justify-center text-center text-[#8E83A6] text-xs">
+                        No live enrollment broadcasts received yet.
+                      </div>
+                    ) : (
+                      liveEnrollments.map((enr) => (
+                        <div
+                          key={enr.id}
+                          className="p-2.5 bg-[#1A1333] border border-[#2E234B] rounded-xl flex items-center justify-between gap-2"
+                        >
+                          <div>
+                            <div className="font-semibold text-white text-xs">{enr.fullName}</div>
+                            <div className="text-[11px] text-[#9E93B5] truncate max-w-[200px]">
+                              {enr.courseTitle}
+                            </div>
+                          </div>
+                          <div className="text-right shrink-0">
+                            <span className="font-bold text-emerald-400">₹{enr.amountPaid}</span>
+                            <div className="text-[10px] text-[#8E83A6]">{enr.timestamp}</div>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+
+                {/* Developer Broadcast & Diagnostics Terminal */}
+                <div className="p-4 bg-[#140F24] border border-[#2E234B] rounded-2xl flex flex-col h-[280px]">
+                  <div className="flex items-center justify-between pb-2 mb-3 border-b border-[#2E234B]">
+                    <div className="flex items-center gap-2">
+                      <Terminal className="w-4 h-4 text-[#FA527B]" />
+                      <h5 className="font-bold text-xs text-white">Developer WebSocket Broadcast</h5>
+                    </div>
+                    <span className="text-[10px] font-mono text-[#8E83A6]">
+                      Server Authority: Active
+                    </span>
+                  </div>
+
+                  <div className="flex-1 overflow-y-auto space-y-2 pr-1 text-xs">
+                    <div className="p-3 bg-[#0C0816] rounded-xl font-mono text-[11px] text-[#C5BAD9] space-y-1.5 border border-[#23183D]">
+                      <div className="text-emerald-400">✓ Server WebSocket Server listening on /ws</div>
+                      <div className="text-[#E5C067]">✓ Authentication Guard: ADMIN_ACCESS_KEY verified</div>
+                      <div className="text-[#8E83A6]">✓ Student connections: Automatically refused (code 1008)</div>
+                      <div className="text-[#00BAF2]">✓ Course catalog broadcasts: Enabled on admin publish</div>
+                    </div>
+                  </div>
+
+                  {/* Manual Broadcast Course Refresh */}
+                  <div className="pt-3 border-t border-[#2E234B] flex items-center justify-between gap-3">
+                    <span className="text-[11px] text-[#9E93B5]">
+                      Broadcast courses to active nodes:
+                    </span>
+                    <button
+                      onClick={() => {
+                        syncCoursesToServer(courses);
+                        setSaveSuccessMsg('Dispatched real-time course refresh over WebSocket to all nodes!');
+                        setTimeout(() => setSaveSuccessMsg(''), 3000);
+                      }}
+                      className="px-3 py-1.5 bg-[#FA527B]/20 hover:bg-[#FA527B]/30 border border-[#FA527B]/40 text-[#FA527B] text-xs font-semibold rounded-xl transition-colors cursor-pointer"
+                    >
+                      Broadcast Refresh
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

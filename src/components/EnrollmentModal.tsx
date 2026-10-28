@@ -94,8 +94,6 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
   onClose,
   onEnrollmentSuccess
 }) => {
-  if (!isOpen || !course) return null;
-
   // Step flow: 1 = Student Details, 2 = Payment Options (UPI / Card / Net Banking), 3 = Confirmation
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [activeTab, setActiveTab] = useState<PaymentTabKey>('upi');
@@ -151,8 +149,10 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
   const MERCHANT_TITLE = 'Legal Berries';
 
   const getUpiUrl = (appScheme: string = 'generic') => {
-    const cleanNote = `Legal Berries - ${course.title.slice(0, 24)}`;
-    const query = `pa=${UPI_VPA}&pn=${encodeURIComponent(MERCHANT_TITLE)}&am=${course.currentPrice}&cu=INR&tn=${encodeURIComponent(cleanNote)}&mc=8241`;
+    const courseTitle = course ? course.title.slice(0, 24) : 'Course';
+    const coursePrice = course ? course.currentPrice : 0;
+    const cleanNote = `Legal Berries - ${courseTitle}`;
+    const query = `pa=${UPI_VPA}&pn=${encodeURIComponent(MERCHANT_TITLE)}&am=${coursePrice}&cu=INR&tn=${encodeURIComponent(cleanNote)}&mc=8241`;
 
     switch (appScheme) {
       case 'gpay':
@@ -200,7 +200,7 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
 
   // Reset states when course opens
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && course) {
       setStep(1);
       setActiveTab('upi');
       setValidationError('');
@@ -211,7 +211,7 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
         setCardHolder(fullName);
       }
     }
-  }, [isOpen, course.id]);
+  }, [isOpen, course?.id]);
 
   // Validation before proceeding
   const validateStudentDetails = (): boolean => {
@@ -256,6 +256,7 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
 
   // Helper to finish enrollment upon verified payment
   const completeSuccess = (txId: string, methodUsed: string) => {
+    if (!course) return;
     const newEnrollment: StudentEnrollment = {
       id: `ENR-${Date.now()}`,
       fullName: fullName.trim(),
@@ -349,6 +350,7 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
 
   // Standard Razorpay Web Checkout Integration
   const launchRazorpayCheckout = async () => {
+    if (!course) return;
     setIsProcessing(true);
     setProcessingStatus('Creating Razorpay order...');
 
@@ -462,12 +464,14 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
   };
 
   const handleCopyWhatsAppLink = () => {
-    if (course.whatsappGroupLink) {
+    if (course?.whatsappGroupLink) {
       navigator.clipboard.writeText(course.whatsappGroupLink);
       setCopiedLink(true);
       setTimeout(() => setCopiedLink(false), 2500);
     }
   };
+
+  if (!isOpen || !course) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">

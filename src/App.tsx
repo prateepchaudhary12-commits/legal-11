@@ -12,7 +12,10 @@ import { Footer } from './components/Footer';
 import { EnrollmentModal } from './components/EnrollmentModal';
 import { DraftPreviewModal } from './components/DraftPreviewModal';
 import { DeveloperCourseModal } from './components/DeveloperCourseModal';
+import { useRealtimeSocket } from './hooks/useRealtimeSocket';
 import { ShieldCheck, Sparkles, Filter, CheckCircle2, ArrowRight } from 'lucide-react';
+
+
 
 export default function App() {
   // Courses state with local storage persistence and server sync
@@ -92,8 +95,53 @@ export default function App() {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   const [isDevModalOpen, setIsDevModalOpen] = useState(false);
-  const [devModalInitialTab, setDevModalInitialTab] = useState<'edit' | 'add' | 'enrollments' | 'domain'>('edit');
+  const [devModalInitialTab, setDevModalInitialTab] = useState<'edit' | 'add' | 'enrollments' | 'domain' | 'websocket'>('edit');
   const [selectedCurriculumId, setSelectedCurriculumId] = useState<string>(courses[0]?.id || '');
+
+  // Real-time WebSocket connection hook - STRICTLY FOR DEVELOPER / ADMIN ONLY
+  const {
+    status: wsStatus,
+    clientId: wsClientId,
+    liveEnrollments,
+    discussions: wsDiscussions,
+    sendChatMessage: wsSendChatMessage,
+    broadcastEnrollment: wsBroadcastEnrollment,
+    sendPing: wsSendPing,
+    reconnect: wsReconnect
+  } = useRealtimeSocket({
+    enabled: isAdminAuthorized, // Only connects when developer/admin is authenticated!
+    adminKey: sessionStorage.getItem('legalberries_admin_token') || '',
+    onCoursesUpdated: (updatedCourses) => {
+      setCourses(updatedCourses);
+      try {
+        localStorage.setItem('legalberries_courses_v1', JSON.stringify(updatedCourses));
+      } catch {
+        // ignore
+      }
+    },
+    onNewEnrollment: (liveEnr) => {
+      setEnrollments((prev) => {
+        if (prev.some((e) => e.id === liveEnr.id)) return prev;
+        const newRecord: StudentEnrollment = {
+          id: liveEnr.id,
+          fullName: liveEnr.fullName,
+          email: `${liveEnr.fullName.toLowerCase().replace(/[^a-z]/g, '') || 'advocate'}@bar.in`,
+          mobile: '98******01',
+          courseId: liveEnr.courseId,
+          courseTitle: liveEnr.courseTitle,
+          amountPaid: liveEnr.amountPaid,
+          transactionId: `LB-LIVE-${liveEnr.id.slice(-6)}`,
+          paymentMethod: 'UPI / Card',
+          timestamp: liveEnr.timestamp || 'Just now',
+          whatsappGroupLink: 'https://chat.whatsapp.com/LegalBerriesCohort',
+          status: 'completed'
+        };
+        return [newRecord, ...prev];
+      });
+    }
+  });
+
+
 
   // Custom Domain state (persisted)
   const [customDomain, setCustomDomain] = useState<string>(() => {
@@ -216,6 +264,15 @@ export default function App() {
     } catch {
       // ignore
     }
+
+    // Broadcast new enrollment to all active WebSocket clients in real-time
+    wsBroadcastEnrollment({
+      id: newEnrollment.id,
+      fullName: newEnrollment.fullName,
+      courseTitle: newEnrollment.courseTitle,
+      courseId: newEnrollment.courseId,
+      amountPaid: newEnrollment.amountPaid,
+    });
   };
 
   const handleOpenEnroll = (course: Course) => {
@@ -247,6 +304,17 @@ export default function App() {
       <Navbar
         isAdminAuthorized={isAdminAuthorized}
         onAdminLogout={handleAdminLogout}
+        onOpenLiveHub={
+          isAdminAuthorized
+            ? () => {
+                setDevModalInitialTab('websocket');
+                setIsDevModalOpen(true);
+              }
+            : undefined
+        }
+        onlineCount={wsStatus.onlineCount}
+        isConnected={wsStatus.connected}
+        latencyMs={wsStatus.latencyMs}
         onOpenDeveloperModal={() => {
           setDevModalInitialTab('edit');
           setIsDevModalOpen(true);
@@ -365,35 +433,48 @@ export default function App() {
 
       {/* MODALS */}
       {/* 1. Student Enrollment & Payment Gateway Modal */}
-      <EnrollmentModal
-        course={enrollCourse}
-        isOpen={isEnrollOpen}
-        onClose={() => setIsEnrollOpen(false)}
-        onEnrollmentSuccess={handleEnrollmentSuccess}
-      />
+      {isEnrollOpen && enrollCourse && (
+        <EnrollmentModal
+          course={enrollCourse}
+          isOpen={isEnrollOpen}
+          onClose={() => setIsEnrollOpen(false)}
+          onEnrollmentSuccess={handleEnrollmentSuccess}
+        />
+      )}
 
       {/* 2. Sample Legal Draft Preview Modal */}
-      <DraftPreviewModal
-        course={previewCourse}
-        isOpen={isPreviewOpen}
-        onClose={() => setIsPreviewOpen(false)}
-        onEnrollClick={handleOpenEnroll}
-      />
+      {isPreviewOpen && previewCourse && (
+        <DraftPreviewModal
+          course={previewCourse}
+          isOpen={isPreviewOpen}
+          onClose={() => setIsPreviewOpen(false)}
+          onEnrollClick={handleOpenEnroll}
+        />
+      )}
 
-      {/* 3. Developer & Course Manager Modal with strict Admin Authority Gate */}
-      <DeveloperCourseModal
-        isOpen={isDevModalOpen}
-        onClose={() => setIsDevModalOpen(false)}
-        courses={courses}
-        onUpdateCourses={handleUpdateCourses}
-        enrollments={enrollments}
-        customDomain={customDomain}
-        onUpdateCustomDomain={handleUpdateCustomDomain}
-        initialTab={devModalInitialTab}
-        isAdminAuthenticated={isAdminAuthorized}
-        onAdminLogin={handleAdminLogin}
-        onAdminLogout={handleAdminLogout}
-      />
+      {/* 3. Developer & Course Manager Modal with strict Admin Authority Gate & Developer WebSocket Terminal */}
+      {isDevModalOpen && (
+        <DeveloperCourseModal
+          isOpen={isDevModalOpen}
+          onClose={() => setIsDevModalOpen(false)}
+          courses={courses}
+          onUpdateCourses={handleUpdateCourses}
+          enrollments={enrollments}
+          customDomain={customDomain}
+          onUpdateCustomDomain={handleUpdateCustomDomain}
+          initialTab={devModalInitialTab}
+          isAdminAuthenticated={isAdminAuthorized}
+          onAdminLogin={handleAdminLogin}
+          onAdminLogout={handleAdminLogout}
+          wsStatus={wsStatus}
+          wsClientId={wsClientId}
+          wsDiscussions={wsDiscussions}
+          liveEnrollments={liveEnrollments}
+          onWsSendMessage={wsSendChatMessage}
+          onWsSendPing={wsSendPing}
+          onWsReconnect={wsReconnect}
+        />
+      )}
     </div>
   );
 }

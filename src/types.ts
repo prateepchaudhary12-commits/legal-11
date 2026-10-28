@@ -54,3 +54,31 @@ export interface Review {
   courseTaken: string;
   highlightMetric: string;
 }
+
+export interface LiveEnrollmentEvent {
+  id: string;
+  fullName: string;
+  courseTitle: string;
+  courseId: string;
+  amountPaid: number;
+  timestamp: string;
+}
+
+export interface LiveChatMessage {
+  id: string;
+  senderName: string;
+  senderRole: 'Advocate' | 'Law Student' | 'Faculty' | 'Admin';
+  text: string;
+  courseTitle?: string;
+  timestamp: string;
+}
+
+export interface WebSocketStatus {
+  connected: boolean;
+  connecting: boolean;
+  onlineCount: number;
+  latencyMs: number | null;
+  lastPingTime: number | null;
+  error: string | null;
+}
+

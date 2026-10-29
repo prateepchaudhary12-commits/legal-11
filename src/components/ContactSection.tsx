@@ -41,7 +41,7 @@ export const ContactSection: React.FC = () => {
           <div className="lg:col-span-5 flex flex-col justify-between gap-4">
             {/* Instagram Card */}
             <a
-              href="https://instagram.com/legalberries.official"
+              href="https://instagram.com/legalberries.in"
               target="_blank"
               rel="noopener noreferrer"
               className="p-6 bg-[#1A1333] border border-[#3E2F63] hover:border-[#FA527B] rounded-2xl transition-all group shadow-xl flex items-start gap-4"
@@ -54,7 +54,7 @@ export const ContactSection: React.FC = () => {
                   Official Instagram Channel
                 </span>
                 <span className="text-base font-bold text-[#F7F2EA] group-hover:text-[#FA527B] transition-colors">
-                  @legalberries.official
+                  @legalberries.in
                 </span>
                 <p className="text-xs text-[#9E93B5] mt-1">
                   Follow for daily drafting teardowns, landmark High Court citations, and live cohort announcements.
@@ -181,7 +181,7 @@ export const ContactSection: React.FC = () => {
 
             <div className="mt-6 pt-4 border-t border-[#2E234B] flex items-center justify-between text-[11px] text-[#7E7299]">
               <span>Direct Hotline: legalberries.official@gmail.com</span>
-              <span>Instagram: @legalberries.official</span>
+              <span>Instagram: @legalberries.in</span>
             </div>
           </div>
         </div>

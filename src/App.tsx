@@ -418,7 +418,7 @@ export default function App() {
         {/* Verified Reviews Section (Adv. Rajesh Kumar, Adv. Arnish Singh, Manoj, Satyam) */}
         <Testimonials />
 
-        {/* Contact Section (Instagram legalberries.official & Email legalberries.official@gmail.com) */}
+        {/* Contact Section (Instagram legalberries.in & Email legalberries.official@gmail.com) */}
         <ContactSection />
       </main>
 

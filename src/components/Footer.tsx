@@ -70,13 +70,13 @@ export const Footer: React.FC<FooterProps> = ({
             </h4>
             <div className="space-y-2">
               <a
-                href="https://instagram.com/legalberries.official"
+                href="https://instagram.com/legalberries.in"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 hover:text-[#FA527B] transition-colors"
               >
                 <Instagram className="w-4 h-4 text-[#FA527B]" />
-                <span className="font-mono">legalberries.official</span>
+                <span className="font-mono">legalberries.in</span>
               </a>
 
               <a

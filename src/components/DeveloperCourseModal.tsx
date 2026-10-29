@@ -1012,9 +1012,70 @@ export const DeveloperCourseModal: React.FC<DeveloperCourseModalProps> = ({
                   <li>
                     Scroll to the <strong>Forwarding</strong> section below records and click <strong>Add Forwarding</strong>:
                     <div className="mt-1.5 ml-4 p-2.5 bg-[#100B1E] rounded-lg border border-[#2A1F45] text-[11px] font-mono space-y-1">
-                      <div><span className="text-[#8E83A6]">Forward to:</span> <span className="text-[#00BAF2]">https://www.legalberries.in</span></div>
+                      <div><span className="text-[#8E83A6]">Forward to:</span> <span className="text-[#00BAF2]">https://legalberries-drafts.ai.studio</span> (or <span className="text-[#00BAF2]">https://www.legalberries.in</span>)</div>
                       <div><span className="text-[#8E83A6]">Redirect Type:</span> <span className="text-[#E5C067]">Permanent (301)</span></div>
-                      <div><span className="text-[#8E83A6]">Forwarding Type:</span> <span className="text-white">Forward only</span></div>
+                      <div><span className="text-[#8E83A6]">Forwarding Type:</span> <span className="text-[#FA527B] font-bold">Forward with masking</span></div>
+                    </div>
+
+                    {/* Masking Meta Fields Quick-Copy */}
+                    <div className="mt-3 ml-4 p-3 bg-[#150F2A] rounded-xl border border-[#3E2F63] space-y-2.5 font-sans">
+                      <div className="text-[11px] font-bold text-[#E5C067] flex items-center justify-between">
+                        <span>Forward with Masking SEO Details (Copy & Paste to GoDaddy)</span>
+                      </div>
+
+                      {/* Title */}
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between text-[10px] text-[#A99EC0]">
+                          <span className="font-semibold text-white">1. Title:</span>
+                          <button
+                            type="button"
+                            onClick={() => handleCopyText('Legal Berries | Premium Legal Drafts & Court Masterclasses', 'mask-title')}
+                            className="text-[#00BAF2] hover:underline flex items-center gap-1 cursor-pointer"
+                          >
+                            <Copy className="w-2.5 h-2.5" />
+                            <span>{copiedRecord === 'mask-title' ? 'Copied Title!' : 'Copy'}</span>
+                          </button>
+                        </div>
+                        <div className="p-2 bg-[#0C081A] rounded border border-[#231A3D] text-[11px] font-mono text-[#F7F2EA] select-all">
+                          Legal Berries | Premium Legal Drafts &amp; Court Masterclasses
+                        </div>
+                      </div>
+
+                      {/* Description */}
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between text-[10px] text-[#A99EC0]">
+                          <span className="font-semibold text-white">2. Description:</span>
+                          <button
+                            type="button"
+                            onClick={() => handleCopyText('Master legal drafting and court advocacy with Legal Berries. Complete vault of ready-to-edit Indian legal drafts, 7-day family court masterclass, and live cohorts.', 'mask-desc')}
+                            className="text-[#00BAF2] hover:underline flex items-center gap-1 cursor-pointer"
+                          >
+                            <Copy className="w-2.5 h-2.5" />
+                            <span>{copiedRecord === 'mask-desc' ? 'Copied Description!' : 'Copy'}</span>
+                          </button>
+                        </div>
+                        <div className="p-2 bg-[#0C081A] rounded border border-[#231A3D] text-[11px] font-mono text-[#F7F2EA] select-all">
+                          Master legal drafting and court advocacy with Legal Berries. Complete vault of ready-to-edit Indian legal drafts, 7-day family court masterclass, and live cohorts.
+                        </div>
+                      </div>
+
+                      {/* Keywords */}
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between text-[10px] text-[#A99EC0]">
+                          <span className="font-semibold text-white">3. Keywords:</span>
+                          <button
+                            type="button"
+                            onClick={() => handleCopyText('legal drafts, legal drafting India, family court masterclass, Indian court drafts, legal drafts vault, contract drafting, advocate templates, legalberries, court advocacy course, bail petition format, divorce petition draft, legalberries.in', 'mask-keywords')}
+                            className="text-[#00BAF2] hover:underline flex items-center gap-1 cursor-pointer"
+                          >
+                            <Copy className="w-2.5 h-2.5" />
+                            <span>{copiedRecord === 'mask-keywords' ? 'Copied Keywords!' : 'Copy'}</span>
+                          </button>
+                        </div>
+                        <div className="p-2 bg-[#0C081A] rounded border border-[#231A3D] text-[11px] font-mono text-[#F7F2EA] select-all">
+                          legal drafts, legal drafting India, family court masterclass, Indian court drafts, legal drafts vault, contract drafting, advocate templates, legalberries, court advocacy course, bail petition format, divorce petition draft, legalberries.in
+                        </div>
+                      </div>
                     </div>
                   </li>
                   <li>

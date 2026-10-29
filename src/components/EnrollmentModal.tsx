@@ -607,7 +607,7 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
                     <ShieldCheck className="w-4 h-4 text-[#E5C067]" />
                     <span>Instant official receipt, live session credentials, and vault access.</span>
                   </div>
-                  <span className="text-[11px] text-[#FA527B] font-mono">legalberries.official</span>
+                  <span className="text-[11px] text-[#FA527B] font-mono">legalberries.in</span>
                 </div>
 
                 <div className="pt-2 space-y-2.5">

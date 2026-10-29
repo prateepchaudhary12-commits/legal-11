@@ -64,13 +64,13 @@ export const Hero: React.FC<HeroProps> = ({ onExploreCourses, onEnrollFirst }) =
             {/* Social channels preview */}
             <div className="pt-4 flex flex-wrap items-center justify-center lg:justify-start gap-5 text-xs text-[#9E93B5]">
               <a
-                href="https://instagram.com/legalberries.official"
+                href="https://instagram.com/legalberries.in"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-1.5 hover:text-[#FA527B] transition-colors"
               >
                 <Instagram className="w-3.5 h-3.5 text-[#FA527B]" />
-                <span>@legalberries.official</span>
+                <span>@legalberries.in</span>
               </a>
               <span aria-hidden="true" className="text-[#3E2F63]">·</span>
               <a
